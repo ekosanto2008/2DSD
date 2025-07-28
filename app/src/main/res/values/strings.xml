@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Payment</string>
+    <string name="label_saldo">Rp %s</string>
+</resources>

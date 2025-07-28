@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "789429915808",
+    "project_id": "paymentapp-a400c",
+    "storage_bucket": "paymentapp-a400c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789429915808:android:bbc6f639b64a4d979af9c5",
+        "android_client_info": {
+          "package_name": "com.santoso.moku"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnXAS3w0gQi01k0e1MfqM9jYkLRAc-3DI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

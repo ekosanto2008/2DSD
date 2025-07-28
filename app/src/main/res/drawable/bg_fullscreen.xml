@@ -1,0 +1,14 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Warna latar belakang -->
+    <item android:drawable="@color/blue" />
+
+    <!-- Gambar wave -->
+    <item>
+        <bitmap
+            android:src="@drawable/bg_wave"
+            android:gravity="fill"
+            android:tileMode="disabled" />
+    </item>
+
+</layer-list>

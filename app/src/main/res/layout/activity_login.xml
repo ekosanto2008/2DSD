@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="@drawable/bg_wave"
+    android:padding="24dp"
+    android:fitsSystemWindows="false"
+    android:clipToPadding="false"
+    android:paddingTop="48dp"
+    android:paddingBottom="32dp">
+
+    <TextView
+        android:text="Login"
+        android:textSize="32sp"
+        android:textColor="@android:color/background_dark"
+        android:layout_gravity="start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp" />
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username"
+        android:drawableStart="@drawable/ic_user"
+        android:drawablePadding="12dp"
+        android:padding="12dp"
+        android:background="@drawable/bg_input"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:drawableStart="@drawable/ic_lock"
+        android:drawablePadding="12dp"
+        android:padding="12dp"
+        android:background="@drawable/bg_input"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:text="Login"
+        android:backgroundTint="@color/blue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tvRegister"
+        android:text="Register"
+        android:textColor="@android:color/background_dark"
+        android:layout_marginTop="24dp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvRegisterLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Belum punya akun? Daftar di sini"
+        android:textColor="@android:color/background_dark"
+        android:textSize="14sp"
+        android:layout_marginTop="24dp"
+        android:layout_gravity="center_horizontal"
+        android:clickable="true"
+        android:focusable="true" />
+</LinearLayout>
