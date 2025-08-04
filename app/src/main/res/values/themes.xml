@@ -1,15 +1,21 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <style name="Theme.Moku" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Fullscreen -->
-        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowFullscreen">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+        <!-- System UI Colors -->
+        <item name="android:statusBarColor">@color/system_ui_color</item>
+        <item name="android:navigationBarColor">@color/system_ui_color</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
 
-        <!-- Optional: background -->
+        <!-- Warna Utama -->
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
+
+        <!-- Background -->
         <item name="android:windowBackground">@color/white</item>
     </style>
 </resources>

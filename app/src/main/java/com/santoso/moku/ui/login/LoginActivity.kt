@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
+import androidx.core.content.ContextCompat
 import com.rejowan.cutetoast.CuteToast
+import com.santoso.moku.R
 import com.santoso.moku.databinding.ActivityLoginBinding
 import com.santoso.moku.ui.dashboard.DashboardActivity
 import com.santoso.moku.ui.register.RegisterActivity
@@ -24,13 +24,13 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        hideSystemUI()
+
+        window.statusBarColor = ContextCompat.getColor(this, R.color.system_ui_color)
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.system_ui_color)
+        setSystemUIColor()
 
         if (viewModel.isUserLoggedIn()) {
             goToMain()
@@ -41,12 +41,12 @@ class LoginActivity : AppCompatActivity() {
             val password = binding.etPassword.text.toString().trim()
 
             if (email.isEmpty()) {
-                CuteToast.ct(this, "Email tidak boleh kosong", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show();
+                CuteToast.ct(this, "Email tidak boleh kosong", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
                 return@setOnClickListener
             }
 
             if (password.isEmpty()) {
-                CuteToast.ct(this, "Password tidak boleh kosong", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show();
+                CuteToast.ct(this, "Password tidak boleh kosong", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
                 return@setOnClickListener
             }
 
@@ -59,10 +59,10 @@ class LoginActivity : AppCompatActivity() {
 
         viewModel.loginResult.observe(this) { (success, error) ->
             if (success) {
-                CuteToast.ct(this, "Login Berhasil", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show();
+                CuteToast.ct(this, "Login berhasil", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show()
                 goToMain()
             } else {
-                CuteToast.ct(this, "Login Gagal", CuteToast.LENGTH_SHORT, CuteToast.ERROR, true).show();
+                CuteToast.ct(this, "Periksa kembali email dan password anda", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
             }
         }
     }
@@ -72,25 +72,19 @@ class LoginActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun hideSystemUI() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.insetsController?.let {
-                it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility = (
-                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    )
+    private fun setSystemUIColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = getColorFromResource(R.color.system_ui_color)
+            window.navigationBarColor = getColorFromResource(R.color.system_ui_color)
         }
     }
 
+    private fun getColorFromResource(resId: Int): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            resources.getColor(resId, theme)
+        } else {
+            @Suppress("DEPRECATION")
+            resources.getColor(resId)
+        }
+    }
 }

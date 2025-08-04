@@ -2,7 +2,6 @@ package com.santoso.moku.ui.register
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -27,18 +26,18 @@ class RegisterActivity : AppCompatActivity() {
             val password = binding.etPassword.text.toString().trim()
 
             if (email.isEmpty()) {
-                CuteToast.ct(this, "Email tidak boleh kosong", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show();
+                CuteToast.ct(this, "Email tidak boleh kosong", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
                 return@setOnClickListener
             }
 
             if (password.length < 6) {
-                CuteToast.ct(this, "Password minimal 6 karakter", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show();
+                CuteToast.ct(this, "Password minimal 6 karakter", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
                 return@setOnClickListener
             }
 
-            val passwordRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&+=!]).{6,}$")
+            val passwordRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{6,}$")
             if (!password.matches(passwordRegex)) {
-                CuteToast.ct(this, "Password harus mengandung huruf besar, huruf kecil, dan angka", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show();
+                CuteToast.ct(this, "Password harus mengandung huruf besar, huruf kecil, dan angka", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
                 return@setOnClickListener
             }
 
@@ -50,9 +49,9 @@ class RegisterActivity : AppCompatActivity() {
             finish() // atau startActivity(Intent(this, LoginActivity::class.java)) jika kamu ingin eksplisit
         }
 
-        viewModel.registerResult.observe(this) { (success, error) ->
+        viewModel.registerResult.observe(this) { (success, _) ->
             if (success) {
-                CuteToast.ct(this, "Registrasi berhasil. Silakan login.", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show();
+                CuteToast.ct(this, "Registrasi berhasil. Silakan login.", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show()
 
                 FirebaseAuth.getInstance().signOut() // ⬅️ Logout otomatis
 
@@ -61,7 +60,7 @@ class RegisterActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                CuteToast.ct(this, "Registrasi gagal:", CuteToast.LENGTH_SHORT, CuteToast.ERROR, true).show();
+                CuteToast.ct(this, "Registrasi gagal:", CuteToast.LENGTH_SHORT, CuteToast.ERROR, true).show()
             }
         }
 

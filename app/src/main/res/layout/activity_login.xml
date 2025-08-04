@@ -14,7 +14,7 @@
     <TextView
         android:text="Login"
         android:textSize="32sp"
-        android:textColor="@android:color/background_dark"
+        android:textColor="@color/black"
         android:layout_gravity="start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,18 +52,18 @@
     <TextView
         android:id="@+id/tvRegister"
         android:text="Register"
-        android:textColor="@android:color/background_dark"
+        android:textColor="@color/black"
         android:layout_marginTop="24dp"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/tvRegisterLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Belum punya akun? Daftar di sini"
-        android:textColor="@android:color/background_dark"
+        android:textColor="@color/black"
         android:textSize="14sp"
         android:layout_marginTop="24dp"
         android:layout_gravity="center_horizontal"
