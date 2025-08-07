@@ -2,10 +2,12 @@ package com.santoso.moku.ui.register
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.rejowan.cutetoast.CuteToast
+import com.santoso.moku.R
 import com.santoso.moku.databinding.ActivityRegisterBinding
 import com.santoso.moku.ui.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,6 +22,11 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        onBackPressedDispatcher.addCallback(this) {
+            finish()
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+        }
 
         binding.btnRegister.setOnClickListener {
             val email = binding.etEmail.text.toString().trim()
@@ -64,6 +71,6 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
-
     }
+
 }

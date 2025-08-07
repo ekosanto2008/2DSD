@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.santoso.moku" >
+    package="com.santoso.moku">
     <!-- Permission Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,11 +11,13 @@
         android:label="Payment"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Moku" >
+        android:theme="@style/Theme.Moku">
+        <activity
+            android:name=".ui.reset.ResetPasswordActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.dashboard.DashboardActivity"
-            android:exported="false" />
-        <!-- Activity Register -->
+            android:exported="false" /> <!-- Activity Register -->
         <activity android:name=".ui.register.RegisterActivity" /> <!-- Activity Login (Launcher) -->
         <activity
             android:name=".ui.login.LoginActivity"

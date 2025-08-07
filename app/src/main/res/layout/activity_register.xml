@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_wave"
-    android:fitsSystemWindows="true">
+    android:padding="24dp"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="24dp">
+        android:gravity="center_horizontal">
 
         <!-- Judul -->
         <TextView
@@ -18,77 +19,83 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Buat Akun"
-            android:textSize="24sp"
-            android:textColor="@android:color/background_dark"
+            android:textSize="28sp"
             android:textStyle="bold"
+            android:textColor="@android:color/black"
             android:layout_marginBottom="32dp" />
 
         <!-- Email -->
-        <EditText
-            android:id="@+id/etEmail"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_input"
-            android:drawableStart="@drawable/ic_email"
-            android:drawablePadding="8dp"
+            android:layout_height="wrap_content"
             android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:textColor="@android:color/background_dark"
-            android:textColorHint="#DDDDDD"
-            android:paddingStart="16dp"
-            android:layout_marginBottom="16dp" />
+            app:startIconDrawable="@drawable/ic_email"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password -->
-        <EditText
-            android:id="@+id/etPassword"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_input"
-            android:drawableStart="@drawable/ic_lock"
-            android:drawablePadding="8dp"
+            android:layout_height="wrap_content"
             android:hint="Password"
-            android:inputType="textPassword"
-            android:textColor="@android:color/background_dark"
-            android:textColorHint="#DDDDDD"
-            android:paddingStart="16dp"
-            android:layout_marginBottom="16dp" />
+            app:startIconDrawable="@drawable/ic_lock"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Konfirmasi Password -->
-        <EditText
-            android:id="@+id/etConfirmPassword"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@drawable/bg_input"
-            android:drawableStart="@drawable/ic_lock"
-            android:drawablePadding="8dp"
+            android:layout_height="wrap_content"
             android:hint="Konfirmasi Password"
-            android:inputType="textPassword"
-            android:textColor="@android:color/background_dark"
-            android:textColorHint="#DDDDDD"
-            android:paddingStart="16dp"
-            android:layout_marginBottom="24dp" />
+            app:startIconDrawable="@drawable/ic_lock"
+            app:endIconMode="password_toggle"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Tombol Daftar -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Daftar"
             android:textAllCaps="false"
+            app:cornerRadius="16dp"
             android:backgroundTint="@color/blue"
-            android:textColor="@android:color/background_dark" />
+            android:textColor="@android:color/white"/>
 
+        <!-- Link ke login -->
         <TextView
             android:id="@+id/tvLoginLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sudah punya akun? Masuk di sini"
-            android:textColor="@android:color/background_dark"
+            android:textColor="@android:color/black"
             android:textSize="14sp"
             android:layout_marginTop="24dp"
             android:layout_gravity="center_horizontal"
             android:clickable="true"
             android:focusable="true" />
-
     </LinearLayout>
 </ScrollView>
