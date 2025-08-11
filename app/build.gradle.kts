@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
     id("dagger.hilt.android.plugin")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("androidx.navigation.safeargs.kotlin")
 }
 
@@ -39,11 +39,20 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
-        viewBinding = true // ✅ Tambahkan ini
+        viewBinding = true
     }
 }
 
 dependencies {
+    implementation(libs.okhttp.v4120)
+    implementation(libs.glide.v4151)
+    ksp(libs.compiler.v4151)
+    implementation(libs.circleimageview)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage.ktx)
+    ksp(libs.glide.compiler)
+    implementation(libs.glide)
+    implementation(libs.firebase.auth.v2300)
     implementation(libs.material.v1120)
     implementation(libs.cutetoast)
     implementation(libs.androidx.activity.ktx)
@@ -51,7 +60,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

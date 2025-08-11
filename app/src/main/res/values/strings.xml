@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Payment</string>
+    <string name="app_name">MOKU</string>
     <string name="label_saldo">Rp %s</string>
     <string name="login">Login</string>
     <string name="username">Username</string>
@@ -13,4 +13,11 @@
     <string name="toLogin">Sudah punya akun? Masuk di sini</string>
     <string name="dashboard">Selamat Datang di Dashboard</string>
     <string name="logout">Logout</string>
+
+    <string-array name="gender_array">
+        <item>Laki-laki</item>
+        <item>Perempuan</item>
+    </string-array>
+
 </resources>
+
