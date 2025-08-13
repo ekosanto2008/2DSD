@@ -3,33 +3,33 @@ package com.santoso.moku.ui.register
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.santoso.moku.data.repository.AuthRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor(
-    private val repository: AuthRepository
-) : ViewModel() {
+class RegisterViewModel @Inject constructor() : ViewModel() {
 
     private val _registerResult = MutableLiveData<Pair<Boolean, String?>>()
-    val registerResult: LiveData<Pair<Boolean, String?>> = _registerResult
+    val registerResult: LiveData<Pair<Boolean, String?>> get() = _registerResult
 
-    fun register(email: String, password: String) {
-        viewModelScope.launch {
-            try {
-                val result = repository.register(email, password)
-                if (result.isSuccess) {
-                    _registerResult.postValue(Pair(true, null))
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+
+    fun registerUser(email: String, password: String) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    user?.sendEmailVerification()
+                        ?.addOnSuccessListener {
+                            _registerResult.value = Pair(true, "Registrasi berhasil! Cek email untuk verifikasi.")
+                        }
+                        ?.addOnFailureListener { e ->
+                            _registerResult.value = Pair(false, "Gagal mengirim email verifikasi: ${e.message}")
+                        }
                 } else {
-                    _registerResult.postValue(Pair(false, result.exceptionOrNull()?.message))
+                    _registerResult.value = Pair(false, task.exception?.message)
                 }
-            } catch (e: Exception) {
-                _registerResult.postValue(Pair(false, e.message))
             }
-        }
     }
 }
-

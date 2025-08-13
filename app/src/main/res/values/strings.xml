@@ -1,18 +1,5 @@
 <resources>
     <string name="app_name">MOKU</string>
-    <string name="label_saldo">Rp %s</string>
-    <string name="login">Login</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
-    <string name="register">Register</string>
-    <string name="toRegister">Belum punya akun? Daftar di sini</string>
-    <string name="buat_akun">Buat Akun</string>
-    <string name="email">Email</string>
-    <string name="konfirmasi_password">Konfirmasi Password</string>
-    <string name="daftar">Daftar</string>
-    <string name="toLogin">Sudah punya akun? Masuk di sini</string>
-    <string name="dashboard">Selamat Datang di Dashboard</string>
-    <string name="logout">Logout</string>
 
     <string-array name="gender_array">
         <item>Laki-laki</item>

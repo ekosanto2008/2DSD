@@ -103,6 +103,35 @@
         app:layout_constraintEnd_toEndOf="@id/btnLogin"
         android:layout_marginEnd="24dp" />
 
+    <!-- Pesan info verifikasi -->
+    <TextView
+        android:id="@+id/tvVerifyInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Email belum diverifikasi. Silakan cek email Anda atau kirim ulang."
+        android:textSize="12sp"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/btnLogin"
+        app:layout_constraintStart_toStartOf="@id/btnLogin"
+        app:layout_constraintEnd_toEndOf="@id/btnLogin"
+        android:layout_marginTop="12dp" />
+
+    <!-- Tombol kirim ulang verifikasi -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnResendVerification"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Kirim Ulang Verifikasi"
+        android:visibility="gone"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        app:backgroundTint="@color/blue"
+        app:layout_constraintTop_toBottomOf="@id/tvVerifyInfo"
+        app:layout_constraintStart_toStartOf="@id/btnLogin"
+        app:layout_constraintEnd_toEndOf="@id/btnLogin"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="24dp" />
 
     <!-- Forgot Password Link -->
     <TextView
@@ -113,7 +142,7 @@
         android:textSize="14sp"
         android:textColor="@color/blue"
         android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/btnLogin"
+        app:layout_constraintTop_toBottomOf="@id/btnResendVerification"
         app:layout_constraintEnd_toEndOf="@id/btnLogin" />
 
     <!-- Register Link -->
