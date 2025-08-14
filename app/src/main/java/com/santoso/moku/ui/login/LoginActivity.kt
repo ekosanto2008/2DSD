@@ -1,7 +1,6 @@
 package com.santoso.moku.ui.login
 
 import android.content.Intent
-import android.graphics.drawable.Animatable
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -26,26 +25,23 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
+
+        // 🚀 Cek langsung apakah user sudah login & email terverifikasi
+        val currentUser = auth.currentUser
+        if (currentUser != null && currentUser.isEmailVerified) {
+            startActivity(Intent(this, DashboardActivity::class.java))
+            finish()
+            return
+        }
+
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         window.statusBarColor = ContextCompat.getColor(this, R.color.system_ui_color)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.system_ui_color)
         setSystemUIColor()
-
-        // Jika sudah login & verified -> langsung ke dashboard, kalau belum verified -> signOut
-        auth.currentUser?.let { current ->
-            current.reload().addOnCompleteListener {
-                if (current.isEmailVerified) {
-                    goToMain()
-                } else {
-                    auth.signOut()
-                    showVerifyUi(false) // pastikan UI verify disembunyikan saat awal
-                }
-            }
-        } ?: run { showVerifyUi(false) }
 
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString()
@@ -57,54 +53,31 @@ class LoginActivity : AppCompatActivity() {
             }
 
             setLoading(true)
-
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     setLoading(false)
                     if (task.isSuccessful) {
                         val user = auth.currentUser
-                        user?.reload()?.addOnCompleteListener {
-                            if (user?.isEmailVerified == true) {
-                                CuteToast.ct(this, "Login berhasil", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show()
-                                goToMain()
-                            } else {
-                                // Kirim ulang verifikasi saat ini juga (opsional), lalu tampilkan UI resend
-                                user?.sendEmailVerification()
-                                CuteToast.ct(this, "Email belum diverifikasi. Cek inbox kamu.", CuteToast.LENGTH_LONG, CuteToast.WARN, true).show()
-                                showVerifyUi(true)
-                                auth.signOut() // cegah akses sebelum verifikasi
-                            }
+                        if (user != null && user.isEmailVerified) {
+                            startActivity(Intent(this, DashboardActivity::class.java))
+                            finish()
+                        } else {
+                            CuteToast.ct(this, "Email belum diverifikasi", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
+                            binding.btnResendVerification.visibility = View.VISIBLE
+                            binding.btnLogin.visibility = View.VISIBLE
                         }
                     } else {
                         CuteToast.ct(this, "Periksa kembali email dan password", CuteToast.LENGTH_SHORT, CuteToast.ERROR, true).show()
-                        showVerifyUi(false)
                     }
                 }
         }
 
-        // Resend verification (login cepat, kirim, lalu signOut lagi)
         binding.btnResendVerification.setOnClickListener {
-            val email = binding.etEmail.text.toString()
-            val password = binding.etPassword.text.toString()
-            if (email.isEmpty() || password.isEmpty()) {
-                CuteToast.ct(this, "Isi email & password untuk kirim ulang verifikasi", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
-                return@setOnClickListener
-            }
-            setLoading(true)
-            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { t ->
-                if (t.isSuccessful) {
-                    auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { v ->
-                        setLoading(false)
-                        if (v.isSuccessful) {
-                            CuteToast.ct(this, "Link verifikasi dikirim ulang. Cek email.", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show()
-                        } else {
-                            CuteToast.ct(this, "Gagal kirim ulang: ${v.exception?.message}", CuteToast.LENGTH_SHORT, CuteToast.ERROR, true).show()
-                        }
-                        auth.signOut()
-                    }
+            auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    CuteToast.ct(this, "Email verifikasi telah dikirim", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show()
                 } else {
-                    setLoading(false)
-                    CuteToast.ct(this, "Email/password salah untuk kirim ulang", CuteToast.LENGTH_SHORT, CuteToast.ERROR, true).show()
+                    CuteToast.ct(this, "Gagal mengirim email verifikasi", CuteToast.LENGTH_SHORT, CuteToast.ERROR, true).show()
                 }
             }
         }
@@ -117,34 +90,12 @@ class LoginActivity : AppCompatActivity() {
         binding.tvForgotPassword.setOnClickListener {
             startActivity(Intent(this, ResetPasswordActivity::class.java))
         }
-
-        // Observer lama kamu tetap dipertahankan
-        viewModel.loginResult.observe(this) { (success, _) ->
-            if (success) {
-                CuteToast.ct(this, "Login berhasil", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show()
-                goToMain()
-            } else {
-                CuteToast.ct(this, "Periksa kembali email dan password anda", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
-            }
-        }
-    }
-
-    private fun showVerifyUi(show: Boolean) {
-        // Jangan sembunyikan btnLogin; cukup tampilkan tombol resend + info di bawahnya
-        binding.btnResendVerification.visibility = if (show) View.VISIBLE else View.GONE
-        binding.tvVerifyInfo.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun setLoading(isLoading: Boolean) {
         binding.btnLogin.isEnabled = !isLoading
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         binding.btnLogin.text = if (isLoading) "Loading..." else "Login"
-        binding.btnResendVerification.isEnabled = !isLoading
-    }
-
-    private fun goToMain() {
-        startActivity(Intent(this, DashboardActivity::class.java))
-        finish()
     }
 
     private fun setSystemUIColor() {

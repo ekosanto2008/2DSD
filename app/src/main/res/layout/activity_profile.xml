@@ -75,20 +75,24 @@
                 android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Jenis Kelamin -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Jenis Kelamin"
-            android:textColor="@android:color/black"
-            android:layout_marginTop="8dp" />
 
-        <Spinner
-            android:id="@+id/spinnerGender"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/genderInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_input"
-            android:spinnerMode="dropdown" />
+            android:hint="Jenis Kelamin"
+            android:layout_marginTop="8dp"
+            app:startIconDrawable="@drawable/ic_gender">
+
+            <Spinner
+                android:id="@+id/spinnerGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:spinnerMode="dropdown"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
 
         <!-- Tinggi Badan -->
         <com.google.android.material.textfield.TextInputLayout
