@@ -12,6 +12,9 @@ import com.rejowan.cutetoast.CuteToast
 import com.santoso.moku.R
 import com.santoso.moku.databinding.ActivityProfileBinding
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.util.Calendar
 
 @AndroidEntryPoint
@@ -26,6 +29,8 @@ class ProfileActivity : AppCompatActivity() {
             uri?.let {
                 selectedPhotoUri = it
                 Glide.with(this).load(it).circleCrop().into(binding.imgProfile)
+                val savedPath = saveImageToLocal(it)
+                viewModel.photoPath.value = savedPath
             }
         }
 
@@ -35,121 +40,146 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupGenderSpinner()
-        setupListeners()
-        observeProfileData()
+        setupDatePicker()
+        setupObservers()
 
-        binding.etEmail.setText(viewModel.getUserEmail() ?: "")
-
-        viewModel.loadUserData()
-    }
-
-    private fun setupGenderSpinner() {
-        val adapter = ArrayAdapter.createFromResource(
-            this,
-            R.array.gender_options,
-            android.R.layout.simple_spinner_item
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerGender.adapter = adapter
-    }
-
-    private fun setupListeners() {
+        // Klik foto untuk pilih dari galeri
         binding.imgProfile.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
 
-        // Tahan lama foto untuk lihat foto
+        // Tekan lama untuk melihat foto
         binding.imgProfile.setOnLongClickListener {
-            val fotoPath = viewModel.getLocalImagePath()
-            if (!fotoPath.isNullOrEmpty()) {
-                showImageDialog(fotoPath)
-            } else {
-                CuteToast.ct(this, "Foto tidak tersedia", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
+            viewModel.photoPath.value?.let { path ->
+                if (path.isNotEmpty()) showFullImageDialog(path)
             }
             true
         }
 
+        // Tombol simpan
+        binding.btnSave.setOnClickListener {
+            val nik = binding.etNik.text.toString().trim()
 
+            if (nik.isEmpty()) {
+                CuteToast.ct(
+                    this,
+                    "NIK tidak boleh kosong",
+                    CuteToast.LENGTH_SHORT,
+                    CuteToast.WARN,
+                    true
+                ).show()
+                return@setOnClickListener
+            }
+
+            viewModel.fullName.value = binding.etFullName.text.toString()
+            viewModel.nik.value = binding.etNik.text.toString()
+            viewModel.birthPlace.value = binding.etBirthPlace.text.toString()
+            viewModel.birthDate.value = binding.etBirthDate.text.toString()
+            viewModel.height.value = binding.etHeight.text.toString()
+            viewModel.weight.value = binding.etWeight.text.toString()
+            viewModel.email.value = binding.etEmail.text.toString()
+            viewModel.gender.value = binding.spinnerGender.selectedItem.toString()
+            viewModel.saveProfile()
+        }
+
+        // Load data
+        viewModel.loadProfile()
+    }
+
+    private fun setupGenderSpinner() {
+        val genderOptions = resources.getStringArray(R.array.gender_options).toList()
+        val genderAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, genderOptions)
+        binding.spinnerGender.adapter = genderAdapter
+    }
+
+    private fun setupDatePicker() {
         binding.etBirthDate.setOnClickListener {
             val calendar = Calendar.getInstance()
-            DatePickerDialog(
+            val datePicker = DatePickerDialog(
                 this,
-                { _, year, month, day ->
-                    binding.etBirthDate.setText("$day/${month + 1}/$year")
+                { _, year, month, dayOfMonth ->
+                    binding.etBirthDate.setText("$dayOfMonth/${month + 1}/$year")
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
+            )
+            datePicker.show()
+        }
+    }
+
+    private fun setupObservers() {
+        viewModel.loadSuccess.observe(this) { ok ->
+            if (ok == true) {
+                binding.etFullName.setText(viewModel.fullName.value)
+                binding.etNik.setText(viewModel.nik.value)
+                binding.etBirthPlace.setText(viewModel.birthPlace.value)
+                binding.etBirthDate.setText(viewModel.birthDate.value)
+                binding.etHeight.setText(viewModel.height.value)
+                binding.etWeight.setText(viewModel.weight.value)
+                binding.etEmail.setText(viewModel.email.value)
+
+                if (!viewModel.photoPath.value.isNullOrEmpty()) {
+                    Glide.with(this)
+                        .load(viewModel.photoPath.value)
+                        .placeholder(R.drawable.ic_user)
+                        .circleCrop()
+                        .into(binding.imgProfile)
+                } else {
+                    binding.imgProfile.setImageResource(R.drawable.ic_user)
+                }
+
+
+                val genderOptions = resources.getStringArray(R.array.gender_options)
+                val index = genderOptions.indexOf(viewModel.gender.value ?: "")
+                if (index >= 0) binding.spinnerGender.setSelection(index)
+            }
         }
 
-        binding.btnSave.setOnClickListener {
-            val nama = binding.etFullName.text.toString()
-            val tempatLahir = binding.etBirthPlace.text.toString()
-            val tanggalLahir = binding.etBirthDate.text.toString()
-            val gender = binding.spinnerGender.selectedItem.toString()
-            val tinggi = binding.etHeight.text.toString()
-            val berat = binding.etWeight.text.toString()
-            val email = binding.etEmail.text.toString()
-
-            if (nama.isEmpty() || tempatLahir.isEmpty() || tanggalLahir.isEmpty()) {
-                CuteToast.ct(this, "Lengkapi semua data!", CuteToast.LENGTH_SHORT, CuteToast.WARN, true).show()
-                return@setOnClickListener
+        viewModel.saveSuccess.observe(this) { ok ->
+            if (ok == true) {
+                CuteToast.ct(
+                    this,
+                    "Data berhasil disimpan",
+                    CuteToast.LENGTH_SHORT,
+                    CuteToast.SUCCESS,
+                    true
+                ).show()
             }
+        }
 
-            viewModel.saveProfile(
-                nama, tempatLahir, tanggalLahir, gender, tinggi, berat, email, selectedPhotoUri
-            ) { success ->
-                if (success) {
-                    CuteToast.ct(this, "Data berhasil disimpan!", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show()
-                } else {
-                    CuteToast.ct(this, "Gagal menyimpan data!", CuteToast.LENGTH_SHORT, CuteToast.ERROR, true).show()
-                }
+        viewModel.error.observe(this) { err ->
+            err?.let {
+                CuteToast.ct(this, it, CuteToast.LENGTH_SHORT, CuteToast.ERROR, true).show()
             }
         }
     }
 
-    private fun observeProfileData() {
-        viewModel.profileData.observe(this) { data ->
-            data?.let {
-                binding.etFullName.setText(it["nama"] as? String ?: "")
-                binding.etBirthPlace.setText(it["tempatLahir"] as? String ?: "")
-                binding.etBirthDate.setText(it["tanggalLahir"] as? String ?: "")
-                binding.etHeight.setText(it["tinggiBadan"] as? String ?: "")
-                binding.etWeight.setText(it["beratBadan"] as? String ?: "")
-
-                val gender = it["jenisKelamin"] as? String ?: ""
-                val genderIndex = resources.getStringArray(R.array.gender_options).indexOf(gender)
-                if (genderIndex >= 0) binding.spinnerGender.setSelection(genderIndex)
-
-                val fotoPath = it["fotoUri"] as? String
-                if (!fotoPath.isNullOrEmpty()) {
-                    Glide.with(this).load(fotoPath).circleCrop().into(binding.imgProfile)
-                } else {
-                    viewModel.getLocalImagePath()?.let { path ->
-                        Glide.with(this).load(path).circleCrop().into(binding.imgProfile)
-                    }
-                }
+    private fun saveImageToLocal(uri: Uri): String {
+        val file = File(filesDir, "profile_image_${System.currentTimeMillis()}.jpg")
+        contentResolver.openInputStream(uri)?.use { inputStream ->
+            FileOutputStream(file).use { outputStream ->
+                copyStream(inputStream, outputStream)
             }
+        }
+        return file.absolutePath
+    }
+
+    private fun copyStream(input: InputStream, output: FileOutputStream) {
+        val buffer = ByteArray(1024)
+        var bytesRead: Int
+        while (input.read(buffer).also { bytesRead = it } != -1) {
+            output.write(buffer, 0, bytesRead)
         }
     }
 
-    private fun showImageDialog(imagePath: String) {
-        val dialog = android.app.Dialog(this)
+    private fun showFullImageDialog(path: String) {
+        val dialog = android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         dialog.setContentView(R.layout.dialog_fullscreen_image)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
         val imageView = dialog.findViewById<android.widget.ImageView>(R.id.fullImageView)
-        val btnClose = dialog.findViewById<android.widget.ImageButton>(R.id.btnClose)
-
-        Glide.with(this)
-            .load(imagePath)
-            .into(imageView)
-
-        btnClose.setOnClickListener { dialog.dismiss() }
-
+        val closeButton = dialog.findViewById<android.widget.ImageView>(R.id.btnClose)
+        Glide.with(this).load(path).into(imageView)
+        closeButton.setOnClickListener { dialog.dismiss() }
         dialog.show()
     }
-
-
 }

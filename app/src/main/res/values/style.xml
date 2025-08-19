@@ -15,4 +15,11 @@
         <item name="cornerSize">50%</item>
     </style>
 
+    <style name="TransparentDialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+
 </resources>

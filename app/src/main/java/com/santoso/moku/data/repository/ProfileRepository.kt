@@ -1,52 +1,63 @@
-package com.santoso.moku.data.repository
+package com.santoso.moku.data
 
 import android.content.Context
 import android.net.Uri
-import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
-class ProfileRepository(
-    private val context: Context,
+@Singleton
+class ProfileRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val firestore: FirebaseFirestore,
     private val auth: FirebaseAuth
 ) {
 
-    fun getUserEmail(): String? {
-        return auth.currentUser?.email
+    fun currentUid(): String? = auth.currentUser?.uid
+    fun currentEmail(): String = auth.currentUser?.email ?: ""
+
+    /** Salin gambar yang dipilih ke internal storage dengan nama unik. */
+    suspend fun copyImageToInternal(src: Uri): String = withContext(Dispatchers.IO) {
+        val input = context.contentResolver.openInputStream(src)
+            ?: throw IllegalStateException("Tidak bisa membuka stream gambar")
+        val fileName = "profile_${System.currentTimeMillis()}.jpg"
+        val outFile = File(context.filesDir, fileName)
+        input.use { i ->
+            FileOutputStream(outFile).use { o -> i.copyTo(o) }
+        }
+        outFile.absolutePath
     }
 
-    fun getProfileData(callback: (Map<String, Any>?) -> Unit) {
-        val uid = auth.currentUser?.uid ?: return callback(null)
+    /** Ambil data profil dari Firestore (users/{uid}). */
+    suspend fun loadProfile(): Map<String, Any?> = suspendCancellableCoroutine { cont ->
+        val uid = currentUid() ?: run {
+            cont.resume(emptyMap())
+            return@suspendCancellableCoroutine
+        }
         firestore.collection("users").document(uid).get()
             .addOnSuccessListener { doc ->
-                callback(doc.data)
+                cont.resume(doc.data ?: emptyMap())
             }
-            .addOnFailureListener {
-                callback(null)
-            }
+            .addOnFailureListener { e -> cont.resumeWithException(e) }
     }
 
-    fun saveProfileData(data: Map<String, Any>, callback: (Boolean) -> Unit) {
-        val uid = auth.currentUser?.uid ?: return callback(false)
-        firestore.collection("users").document(uid).set(data)
-            .addOnSuccessListener { callback(true) }
-            .addOnFailureListener { callback(false) }
-    }
-
-    fun saveImageToLocal(uri: Uri): String {
-        val file = File(context.filesDir, "profile_image.jpg")
-        context.contentResolver.openInputStream(uri)?.use { input ->
-            FileOutputStream(file).use { output ->
-                input.copyTo(output)
-            }
+    /** Simpan data profil ke Firestore. */
+    suspend fun saveProfile(data: Map<String, Any?>): Unit = suspendCancellableCoroutine { cont ->
+        val uid = currentUid() ?: run {
+            cont.resume(Unit)
+            return@suspendCancellableCoroutine
         }
-        return file.absolutePath
-    }
-
-    fun getLocalImagePath(): String? {
-        val file = File(context.filesDir, "profile_image.jpg")
-        return if (file.exists()) file.absolutePath else null
+        firestore.collection("users").document(uid).set(data)
+            .addOnSuccessListener { cont.resume(Unit) }
+            .addOnFailureListener { e -> cont.resumeWithException(e) }
     }
 }

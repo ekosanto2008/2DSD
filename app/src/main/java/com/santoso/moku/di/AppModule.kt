@@ -3,7 +3,7 @@ package com.santoso.moku.di
 import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.santoso.moku.data.repository.ProfileRepository
+import com.santoso.moku.data.ProfileRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,13 +23,11 @@ object AppModule {
     @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     fun provideProfileRepository(
         @ApplicationContext context: Context,
         firestore: FirebaseFirestore,
         auth: FirebaseAuth
-    ): ProfileRepository {
-        return ProfileRepository(context, firestore, auth)
-    }
+    ): ProfileRepository = ProfileRepository(context, firestore, auth)
+
 }

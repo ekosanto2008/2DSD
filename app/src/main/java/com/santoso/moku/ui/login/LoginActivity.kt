@@ -59,6 +59,7 @@ class LoginActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         val user = auth.currentUser
                         if (user != null && user.isEmailVerified) {
+                            CuteToast.ct(this, "Login Berhasil", CuteToast.LENGTH_SHORT, CuteToast.SUCCESS, true).show()
                             startActivity(Intent(this, DashboardActivity::class.java))
                             finish()
                         } else {
